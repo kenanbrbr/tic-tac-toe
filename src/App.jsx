@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import Cell from "./components/Cell";
 
-const initialValue = ["", "", "", "", "", "", "", "", ""];
 function App() {
+  const initialValue = ["", "", "", "", "", "", "", "", ""];
   const [cells, setCells] = useState(initialValue);
   const [symbol, setSymbol] = useState(false);
   const [winningMessage, setWinningMessage] = useState("");
@@ -22,10 +22,13 @@ function App() {
       [2, 4, 6],
     ];
 
+    let next = true;
+
     winningCombos.forEach((array) => {
       const circleWins = array.every((cell) => cells[cell] === "circle");
       if (circleWins) {
         setWinningMessage("Circle wins!");
+        next = false;
         return;
       }
     });
@@ -34,12 +37,13 @@ function App() {
       const crossWins = array.every((cell) => cells[cell] === "cross");
       if (crossWins) {
         setWinningMessage("Cross wins!");
+        next = false;
         return;
       }
     });
 
     const draw = cells.every((cell) => cell !== "");
-    if (draw) {
+    if (draw && next) {
       setWinningMessage("Draw!");
     }
   };
@@ -47,8 +51,10 @@ function App() {
   const handleRestart = () => {
     setCells(initialValue);
     setWinningMessage("");
-    setGo("");
+    setSymbol(false);
   };
+
+  console.log(cells);
 
   useEffect(() => {
     checkScore();
@@ -76,10 +82,20 @@ function App() {
           />
         ))}
       </div>
-      <p className="text-3xl text-red-900">{winningMessage}</p>
+      <p
+        className={`text-3xl ${
+          winningMessage === "Draw!"
+            ? "text-green-900"
+            : symbol
+            ? "text-red-900"
+            : "text-blue-900"
+        }`}
+      >
+        {winningMessage}
+      </p>
       {winningMessage && (
         <button
-          className="border-solid border-2 border-black p-1 bg-red-200 rounded-md mt-2 text-2xl w-20"
+          className="border-solid border-2 border-black p-1 bg-red-200 rounded-md mt-2 text-2xl w-[150px]"
           onClick={handleRestart}
         >
           Restart
